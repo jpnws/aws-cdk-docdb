@@ -1,14 +1,24 @@
-# Welcome to your CDK TypeScript project
+# AWS CDK DocumentDB
 
-This is a blank project for CDK development with TypeScript.
+This example uses **AWS CDK** to deploy:
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+- Virtual Private Cloud (VPC)
+- Security Group
+- Amazon DocumentDB
+- Secrets Manager
+
+![Diagram](./assets/diagram1.png)
 
 ## Useful commands
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `npx cdk deploy`  deploy this stack to your default AWS account/region
-* `npx cdk diff`    compare deployed stack with current state
-* `npx cdk synth`   emits the synthesized CloudFormation template
+- `npm run build` compile typescript to js
+- `npm run watch` watch for changes and compile
+- `npm run test` perform the jest unit tests
+- `npx cdk deploy` deploy this stack to your default AWS account/region
+- `npx cdk diff` compare deployed stack with current state
+- `npx cdk synth` emits the synthesized CloudFormation template
+
+## Reference
+
+[Deploy a containerized application with Amazon ECS and connect to Amazon DocumentDB (with MongoDB compatibility) securely
+](https://aws.amazon.com/blogs/database/deploy-a-containerized-application-with-amazon-ecs-and-connect-to-amazon-documentdb-securely/)
