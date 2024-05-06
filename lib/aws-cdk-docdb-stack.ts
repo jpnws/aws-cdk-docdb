@@ -126,16 +126,19 @@ export class AwsCdkDocdbStack extends cdk.Stack {
       image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
       memoryLimitMiB: 512,
       cpu: 256,
-      environment: {
-        DATABASE_URI: `mongodb://${docDbCredentials
-          .secretValueFromJson("username")
-          .unsafeUnwrap()}:${cdk.SecretValue.secretsManager(
-          docDbCredentials.secretArn,
-          { jsonField: "password" }
-        )}@${docDbCluster.clusterEndpoint.hostname}:27017/cms`,
-      },
       secrets: {
-        PAYLOAD_SECRET: ecs.Secret.fromSecretsManager(payloadSecret),
+        DOCDB_USERNAME: ecs.Secret.fromSecretsManager(
+          docDbCredentials,
+          "username"
+        ),
+        DOCDB_PASSWORD: ecs.Secret.fromSecretsManager(
+          docDbCredentials,
+          "password"
+        ),
+        PAYLOAD_SECRET: ecs.Secret.fromSecretsManager(
+          payloadSecret,
+          "PAYLOAD_SECRET"
+        ),
       },
       portMappings: [
         {
