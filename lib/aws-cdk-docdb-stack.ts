@@ -34,66 +34,6 @@ export class AwsCdkDocdbStack extends cdk.Stack {
     });
 
     // * =====================================
-    // * Elastic Container Service (ECS)
-    // * =====================================
-
-    // Define the security group for the ECS cluster.
-    const ecsSecurityGroup = new ec2.SecurityGroup(this, "ECSSecurityGroup", {
-      vpc: vpc,
-    });
-
-    // Create an ECS cluster.
-    const ecsCluster = new ecs.Cluster(this, "ECSCluster", { vpc });
-
-    // Create ECS task definition.
-    const ecsTaskDefinition = new ecs.FargateTaskDefinition(
-      this,
-      "TaskDefinition"
-    );
-
-    // Add a container to the task definition.
-    ecsTaskDefinition.addContainer("AppContainer", {
-      image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
-      memoryLimitMiB: 512,
-      cpu: 256,
-      environment: {
-        EXAMPLE_ENV: "example_value",
-      },
-      portMappings: [
-        {
-          // Expose the container port.
-          containerPort: 80,
-        },
-      ],
-    });
-
-    // Create an ECS service.
-    const ecsService = new ecs.FargateService(this, "ECSService", {
-      cluster: ecsCluster,
-      taskDefinition: ecsTaskDefinition,
-      securityGroups: [ecsSecurityGroup],
-      assignPublicIp: true,
-      vpcSubnets: vpc.selectSubnets({ subnetGroupName: "public" }),
-    });
-
-    // Application load balancer.
-    const loadBalancer = new elb.ApplicationLoadBalancer(this, "LoadBalancer", {
-      vpc: vpc,
-      internetFacing: true,
-    });
-
-    // Add a listener to the load balancer and targets to listen.
-    const loadBalancerListener = loadBalancer.addListener("Listener", {
-      port: 80,
-    });
-
-    // Add the ECS service as a target to the load balancer listener.
-    loadBalancerListener.addTargets("ECS", {
-      port: 80,
-      targets: [ecsService],
-    });
-
-    // * =====================================
     // * DocumentDB
     // * =====================================
 
@@ -152,6 +92,66 @@ export class AwsCdkDocdbStack extends cdk.Stack {
       // group to allow incoming traffic from the containerized application's
       // security group.
       securityGroup: ddbSecurityGroup,
+    });
+
+    // * =====================================
+    // * Elastic Container Service (ECS)
+    // * =====================================
+
+    // Define the security group for the ECS cluster.
+    const ecsSecurityGroup = new ec2.SecurityGroup(this, "ECSSecurityGroup", {
+      vpc: vpc,
+    });
+
+    // Create an ECS cluster.
+    const ecsCluster = new ecs.Cluster(this, "ECSCluster", { vpc });
+
+    // Create ECS task definition.
+    const ecsTaskDefinition = new ecs.FargateTaskDefinition(
+      this,
+      "TaskDefinition"
+    );
+
+    // Add a container to the task definition.
+    ecsTaskDefinition.addContainer("AppContainer", {
+      image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+      memoryLimitMiB: 512,
+      cpu: 256,
+      environment: {
+        EXAMPLE_ENV: "example_value",
+      },
+      portMappings: [
+        {
+          // Expose the container port.
+          containerPort: 80,
+        },
+      ],
+    });
+
+    // Create an ECS service.
+    const ecsService = new ecs.FargateService(this, "ECSService", {
+      cluster: ecsCluster,
+      taskDefinition: ecsTaskDefinition,
+      securityGroups: [ecsSecurityGroup],
+      assignPublicIp: true,
+      vpcSubnets: vpc.selectSubnets({ subnetGroupName: "public" }),
+    });
+
+    // Application load balancer.
+    const loadBalancer = new elb.ApplicationLoadBalancer(this, "LoadBalancer", {
+      vpc: vpc,
+      internetFacing: true,
+    });
+
+    // Add a listener to the load balancer and targets to listen.
+    const loadBalancerListener = loadBalancer.addListener("Listener", {
+      port: 80,
+    });
+
+    // Add the ECS service as a target to the load balancer listener.
+    loadBalancerListener.addTargets("ECS", {
+      port: 80,
+      targets: [ecsService],
     });
 
     // * =====================================
