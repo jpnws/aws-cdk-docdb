@@ -112,13 +112,30 @@ export class AwsCdkDocdbStack extends cdk.Stack {
       "TaskDefinition"
     );
 
+    // Create a new secret for PAYLOAD_SECRET with a random value
+    const payloadSecret = new smg.Secret(this, "PayloadSecret", {
+      generateSecretString: {
+        secretStringTemplate: JSON.stringify({}),
+        generateStringKey: "PAYLOAD_SECRET",
+        excludeCharacters: '"@/\\ ',
+      },
+    });
+
     // Add a container to the task definition.
     ecsTaskDefinition.addContainer("AppContainer", {
       image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
       memoryLimitMiB: 512,
       cpu: 256,
       environment: {
-        EXAMPLE_ENV: "example_value",
+        DATABASE_URI: `mongodb://${docDbCredentials
+          .secretValueFromJson("username")
+          .unsafeUnwrap()}:${cdk.SecretValue.secretsManager(
+          docDbCredentials.secretArn,
+          { jsonField: "password" }
+        )}@${docDbCluster.clusterEndpoint.hostname}:27017/cms`,
+      },
+      secrets: {
+        PAYLOAD_SECRET: ecs.Secret.fromSecretsManager(payloadSecret),
       },
       portMappings: [
         {
