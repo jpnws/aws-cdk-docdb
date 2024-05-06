@@ -116,7 +116,7 @@ export class AwsCdkDocdbStack extends cdk.Stack {
     const payloadSecret = new smg.Secret(this, "PayloadSecret", {
       generateSecretString: {
         secretStringTemplate: JSON.stringify({}),
-        generateStringKey: "PAYLOAD_SECRET",
+        generateStringKey: "payloadSecret",
         excludeCharacters: '"@/\\ ',
       },
     });
@@ -137,7 +137,7 @@ export class AwsCdkDocdbStack extends cdk.Stack {
         ),
         PAYLOAD_SECRET: ecs.Secret.fromSecretsManager(
           payloadSecret,
-          "PAYLOAD_SECRET"
+          "payloadSecret"
         ),
       },
       portMappings: [
